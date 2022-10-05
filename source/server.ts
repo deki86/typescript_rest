@@ -3,10 +3,22 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import logging from './config/logging';
 import config from './config/config';
-import sampleRoutes from './routes/sample';
+import sampleRoutes from './routes/users';
+import mongoose from 'mongoose';
 
 const NAMESPACE = 'Server';
 const router = express();
+
+/** Connect to mongo */
+
+mongoose
+    .connect(config.mongo.url, config.mongo.options)
+    .then((result) => {
+        logging.info(NAMESPACE, 'Conncted to mongoDB');
+    })
+    .catch((error) => {
+        logging.error(NAMESPACE, error.message, error);
+    });
 
 /** Logging */
 router.use((req, res, next) => {
@@ -37,7 +49,7 @@ router.use((req, res, next) => {
 });
 
 /** Routes */
-router.use('/sample', sampleRoutes);
+router.use('/users', sampleRoutes);
 
 /** Error Handling */
 router.use((req, res, next) => {
