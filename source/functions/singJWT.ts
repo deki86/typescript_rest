@@ -35,9 +35,11 @@ const singJWT = (user: IUser, callback: (error: Error | null, token: string | nu
         let errorMessage = 'Failed to do something exceptional';
         if (error instanceof Error) {
             errorMessage = error.message;
+            logging.error(NAMESPACE, errorMessage, error);
+            callback(error, null);
+        } else {
+            console.log('Unexpected error', error);
         }
-        logging.error(NAMESPACE, errorMessage, error);
-        // callback(error, null);
     }
 };
 

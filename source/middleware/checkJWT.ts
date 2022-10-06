@@ -5,7 +5,7 @@ import config from '../config/config';
 
 const NAMESPACE = 'Auth';
 
-const extractJWT = (req: Request, res: Response, next: NextFunction) => {
+const checkJWT = (req: Request, res: Response, next: NextFunction) => {
     logging.info(NAMESPACE, 'Validating token');
 
     let token = req.headers.authorization?.split(' ')[1];
@@ -29,4 +29,4 @@ const extractJWT = (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-export default extractJWT;
+export default checkJWT;
