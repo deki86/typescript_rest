@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import config from '../config/config';
-import logging from '../config/logging';
+import logging from './logging';
 import IUser from '../interfaces/user';
 
 const NAMESPACE = 'Auth';

@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import logging from '../config/logging';
+import logging from '../utils/logging';
 import bcrypt, { hash } from 'bcryptjs';
 import mongoose from 'mongoose';
 import User from '../models/user';
-import singJwt from '../functions/singJWT';
+import singJwt from '../utils/singJWT';
 
 const NAMESPACE = 'User';
 
