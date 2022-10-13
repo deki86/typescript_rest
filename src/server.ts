@@ -3,11 +3,28 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import logging from './utils/logging';
 import config from './config/config';
-import sampleRoutes from './routes/users';
+import userRoutes from './routes/users';
+import indexRoutes from './routes/index';
+import loginRoutes from './routes/login';
+
 import mongoose from 'mongoose';
+// import dotenv from 'dotenv';
+import path from 'path';
 
 const NAMESPACE = 'Server';
-const router = express();
+
+// dotenv.config();
+
+const app = express();
+
+// Setting the view engine
+app.set('view engine', 'ejs');
+// Setting for the root path for views directory
+app.set('views', path.join(__dirname, 'views'));
+app.use(express.static(path.join(__dirname + '/css')));
+
+/** Parse request */
+app.use(express.urlencoded({ extended: true }));
 
 /** Connect to mongo */
 
@@ -21,7 +38,7 @@ mongoose
     });
 
 /** Logging */
-router.use((req, res, next) => {
+app.use((req, res, next) => {
     logging.info(NAMESPACE, `METHOD - [${req.method}], URL - [${req.url}], IP - [${req.socket.remoteAddress}]`);
 
     res.on('finish', () => {
@@ -31,12 +48,8 @@ router.use((req, res, next) => {
     next();
 });
 
-/** Parse request */
-router.use(bodyParser.urlencoded({ extended: false }));
-router.use(bodyParser.json());
-
 /** Rules of API */
-router.use((req, res, next) => {
+app.use((req, res, next) => {
     res.header('Access-Controll-Allow-Origin', '*');
     res.header('Access-Controll-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
 
@@ -49,10 +62,12 @@ router.use((req, res, next) => {
 });
 
 /** Routes */
-router.use('/users', sampleRoutes);
+app.use('/', indexRoutes);
+app.use('/', loginRoutes);
+app.use('/users', userRoutes);
 
 /** Error Handling */
-router.use((req, res, next) => {
+app.use((req, res, next) => {
     const error = new Error('not found');
 
     return res.status(404).json({
@@ -62,5 +77,5 @@ router.use((req, res, next) => {
 
 /** Create Server */
 
-const httpServer = http.createServer(router);
+const httpServer = http.createServer(app);
 httpServer.listen(config.server.port, () => logging.info(NAMESPACE, `Server runing on  ${config.server.hostname}: ${config.server.port}`));

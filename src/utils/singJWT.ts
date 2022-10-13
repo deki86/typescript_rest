@@ -10,12 +10,12 @@ const singJWT = (user: IUser, callback: (error: Error | null, token: string | nu
     let expirationTime = timeSinchEpoch + Number(config.server.token.exppireTime) * 100000;
     let expirationTimeInSeconds = Math.floor(expirationTime / 1000);
 
-    logging.info(NAMESPACE, `Attemping to sing token for user ${user.username}`);
+    logging.info(NAMESPACE, `Attemping to sing token for user ${user.email}`);
 
     try {
         jwt.sign(
             {
-                username: user.username
+                username: user.email
             },
             config.server.token.secret,
             {

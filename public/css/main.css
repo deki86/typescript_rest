@@ -1,0 +1,159 @@
+.gradient-custom-3 {
+    /* fallback for old browsers */
+    background: #8490fa;
+
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(
+        to right,
+        rgba(163, 132, 250, 0.5),
+        rgba(143, 211, 244, 0.5)
+    );
+
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(
+        to right,
+        rgba(197, 132, 250, 0.5),
+        rgba(143, 211, 244, 0.5)
+    );
+}
+.gradient-custom-4 {
+    /* fallback for old browsers */
+    background: #84fab0;
+
+    /* Chrome 10-25, Safari 5.1-6 */
+    background: -webkit-linear-gradient(
+        to right,
+        rgb(134, 150, 250),
+        rgba(143, 211, 244, 1)
+    );
+
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    background: linear-gradient(
+        to right,
+        rgb(132, 150, 250),
+        rgba(143, 211, 244, 1)
+    );
+}
+
+body {
+    padding-top: 50px;
+}
+.container {
+    background-image: url('../img/5.jpg');
+}
+.jumbotron {
+    border-radius: 0px;
+}
+.invalid-feedback {
+    display: inline !important;
+}
+
+/* Chat styles */
+.chat {
+    display: flex;
+}
+
+.chat__sidebar {
+    height: 100vh;
+    color: rgb(10, 10, 10);
+    width: 225px;
+    border: 1px solid #cdd2e1;
+    border-radius: 10px;
+}
+
+.sidebar-title {
+    padding: 10px;
+    background-color: #6d8585;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    justify-content: center;
+}
+.sidebar-users h5 {
+    margin-top: 10px;
+    padding: 5px;
+}
+.sidebar-users p {
+    margin-bottom: 0;
+    padding: 10px;
+    border: 1px solid;
+}
+
+.chat__main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    max-height: 60vh;
+}
+
+.chat__messages {
+    flex-grow: 1;
+    overflow-y: scroll;
+    padding-left: 20px;
+    width: 80%;
+}
+
+.chat-left {
+    margin-right: 550px;
+    background-color: antiquewhite;
+}
+
+.chat-right {
+    margin-left: auto;
+    background-color: aliceblue;
+}
+
+.chat-box {
+    border: 1px solid #6d8585;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: fit-content;
+}
+
+.username {
+    font-size: 13px;
+    font-style: italic;
+}
+.chat-form-container {
+    margin-top: 50px;
+    margin-bottom: -50px;
+    padding-left: 220px;
+}
+.chat-form {
+    display: inline;
+    margin-top: 20px;
+}
+.text {
+    margin: auto;
+}
+.time {
+    margin: auto;
+    font-size: 9px;
+}
+
+.custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
+
+.dot {
+    height: 12px;
+    width: 12px;
+    background-color: rgb(253, 0, 0);
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.dot-green {
+    height: 12px;
+    width: 12px;
+    background-color: rgb(4, 231, 53);
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.input-file {
+    padding-left: 25px;
+}
