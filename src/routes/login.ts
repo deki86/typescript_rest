@@ -31,5 +31,6 @@ router.post(
 );
 router.get('/login', loginController.loginView);
 router.post('/login', loginController.login);
+router.post('/logout', loginController.logout);
 
 export default router;

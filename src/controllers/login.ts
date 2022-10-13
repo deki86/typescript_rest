@@ -1,9 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
-import logging from '../utils/logging';
+import jwt from 'jsonwebtoken';
+import cookieParser from 'cookie-parser';
 import bcrypt, { hash } from 'bcryptjs';
-import User from '../models/user';
+import logging from '../utils/logging';
 import singJwt from '../utils/singJWT';
+import User from '../models/user';
+const jwtKey = process.env['JWT_KEY'] || 'supersecret';
 
 const NAMESPACE = 'Login';
 
@@ -55,26 +58,19 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
             }
 
             try {
-                await User.create({
+                let user = await User.create({
                     firstName,
                     lastName,
                     email,
                     password: hash
                 });
+
+                singJwt(user, (error, token) => {
+                    return res.status(201).render('index', { message: 'Auth Succesfull', token, user: user });
+                });
             } catch (err) {
                 logging.error(NAMESPACE, 'Error on user create', err);
             }
-
-            res.status(201).render('auth/register', {
-                path: '/register',
-                validationErrors: [],
-                oldValue: {
-                    firstName: '',
-                    lastName: '',
-                    email: ''
-                },
-                statusMessage: 'You succesfuly create user, now you can log in!'
-            });
         });
     }
 };
@@ -104,27 +100,20 @@ const login = (req: Request, res: Response, next: NextFunction) => {
                 if (error) {
                     logging.error(NAMESPACE, error.message, error);
 
-                    return res.status(401).json({
-                        message: 'Unauthorized'
+                    return res.status(422).render('auth/login', {
+                        error: `Username and password are incorect! ${error}`
                     });
                 } else if (result) {
                     singJwt(user[0], (error, token) => {
                         if (error) {
                             logging.error(NAMESPACE, 'Unable to sign token: ', error);
 
-                            // return res.status(401).json({
-                            //     message: 'Unauthorized',
-                            //     error
-                            // });
                             return res.status(422).render('auth/login', {
                                 error: `Username and password are incorect! ${error}`
                             });
                         } else if (token) {
-                            return res.status(200).json({
-                                message: 'Auth Succesfull',
-                                token,
-                                user: user[0]
-                            });
+                            res.cookie('jwt', token);
+                            return res.status(200).render('index', { message: 'Auth Succesfull', token, user: user[0] });
                         }
                     });
                 }
@@ -138,28 +127,17 @@ const login = (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-const validate = (req: Request, res: Response, next: NextFunction) => {
-    return [
-        body('firstName', 'Please enter First Name with minumum 3 characters').isLength({ min: 3 }),
-        body('lastName', 'Please enter Last Name with minumum 3 characters').isLength({ min: 3 }),
-        body('email', 'Please enter a valid email')
-            .isEmail()
-            .custom(async (value, { req }) => {
-                const userDB = await User.findOne({ email: value });
-                if (userDB) {
-                    return Promise.reject('Email already exists, pick another one!');
-                }
-            }),
-        body('password', 'Please enter Password with minumum 6 characters').isLength({ min: 6 }),
-        body('confirmPassword').custom((value, { req }) => {
-            if (value !== req.body.password) {
-                throw new Error('Password must match');
-            }
-            return true;
-        })
-    ];
+const logout = (req: Request, res: Response, next: NextFunction) => {};
 
-    next();
-};
+const withUser = [
+    cookieParser(),
+    (req: Request, res: Response, next: NextFunction) => {
+        const token = jwt.verify(req.cookies['jwt'], jwtKey);
+        console.log('eeej', token);
+        // let user = User.find({ token['username'] });
+        // console.log('test user', user);
+        next();
+    }
+];
 
-export default { validateToken, register, login, registerView, loginView, validate };
+export default { validateToken, register, login, registerView, loginView, logout, withUser };

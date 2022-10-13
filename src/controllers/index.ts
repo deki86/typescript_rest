@@ -9,7 +9,7 @@ const home = (req: Request, res: Response, next: NextFunction) => {
     //     message: 'Authorized'
     // });
 
-    res.render('index');
+    res.render('index', { user: '' });
 };
 
 export default { home };
