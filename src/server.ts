@@ -1,11 +1,13 @@
 import http from 'http';
 import express from 'express';
 import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 import logging from './utils/logging';
 import config from './config/config';
 import userRoutes from './routes/users';
 import indexRoutes from './routes/index';
 import loginRoutes from './routes/login';
+import globalUser from './middleware/globalUser';
 
 import mongoose from 'mongoose';
 // import dotenv from 'dotenv';
@@ -21,10 +23,19 @@ const app = express();
 app.set('view engine', 'ejs');
 // Setting for the root path for views directory
 app.set('views', path.join(__dirname, 'views'));
-app.use(express.static(path.join(__dirname + '/css')));
+app.use(express.static(path.join(__dirname, '../public')));
+// app.use(express.static(path.join(__dirname + '../public')));
+
+app.use(cookieParser());
+
+/**
+ * Middleware to set local user
+ */
+app.use(globalUser);
 
 /** Parse request */
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 /** Connect to mongo */
 
@@ -49,17 +60,17 @@ app.use((req, res, next) => {
 });
 
 /** Rules of API */
-app.use((req, res, next) => {
-    res.header('Access-Controll-Allow-Origin', '*');
-    res.header('Access-Controll-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+// app.use((req, res, next) => {
+//     res.header('Access-Controll-Allow-Origin', '*');
+//     res.header('Access-Controll-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
 
-    if (req.method == 'OPTIONS') {
-        res.header('Access-Controll-Allow-Methods', 'GET PATCH DELETE POST PUT');
-        return res.status(200).json({});
-    }
+//     if (req.method == 'OPTIONS') {
+//         res.header('Access-Controll-Allow-Methods', 'GET PATCH DELETE POST PUT');
+//         return res.status(200).json({});
+//     }
 
-    next();
-});
+//     next();
+// });
 
 /** Routes */
 app.use('/', indexRoutes);

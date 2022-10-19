@@ -1,7 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
-import jwt from 'jsonwebtoken';
-import cookieParser from 'cookie-parser';
 import bcrypt, { hash } from 'bcryptjs';
 import logging from '../utils/logging';
 import singJwt from '../utils/singJWT';
@@ -66,7 +64,8 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
                 });
 
                 singJwt(user, (error, token) => {
-                    return res.status(201).render('index', { message: 'Auth Succesfull', token, user: user });
+                    res.cookie('jwt', token);
+                    return res.redirect('/dashboard');
                 });
             } catch (err) {
                 logging.error(NAMESPACE, 'Error on user create', err);
@@ -91,31 +90,34 @@ const login = (req: Request, res: Response, next: NextFunction) => {
         .exec()
         .then((user) => {
             if (user.length !== 1) {
-                return res.status(422).render('auth/login', {
-                    error: 'Username and password are incorect!'
+                return res.status(401).json({
+                    message: 'Unauthorized'
                 });
             }
 
             bcrypt.compare(password, user[0].password, (error, result) => {
                 if (error) {
-                    logging.error(NAMESPACE, error.message, error);
-
-                    return res.status(422).render('auth/login', {
-                        error: `Username and password are incorect! ${error}`
+                    return res.status(401).json({
+                        message: 'Password Mismatch'
                     });
-                } else if (result) {
+                }
+                if (result) {
                     singJwt(user[0], (error, token) => {
                         if (error) {
                             logging.error(NAMESPACE, 'Unable to sign token: ', error);
 
-                            return res.status(422).render('auth/login', {
-                                error: `Username and password are incorect! ${error}`
+                            return res.status(422).json({
+                                error: `Username and password are incorect! 3 ${error}`
                             });
                         } else if (token) {
                             res.cookie('jwt', token);
-                            return res.status(200).render('index', { message: 'Auth Succesfull', token, user: user[0] });
+                            res.redirect('/dashboard');
+                            // res.render('dashboard', { path: '/dashboard', message: 'Auth Succesfull' });
+                            // return res.status(200).json({ message: 'Auth Succesfull', user: user[0] });
                         }
                     });
+                } else {
+                    return res.status(401).json({ message: 'Invalid credentials' });
                 }
             });
         })
@@ -127,17 +129,9 @@ const login = (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-const logout = (req: Request, res: Response, next: NextFunction) => {};
+const logout = (req: Request, res: Response, next: NextFunction) => {
+    res.clearCookie('jwt');
+    res.status(200).json({ message: 'Loged out' });
+};
 
-const withUser = [
-    cookieParser(),
-    (req: Request, res: Response, next: NextFunction) => {
-        const token = jwt.verify(req.cookies['jwt'], jwtKey);
-        console.log('eeej', token);
-        // let user = User.find({ token['username'] });
-        // console.log('test user', user);
-        next();
-    }
-];
-
-export default { validateToken, register, login, registerView, loginView, logout, withUser };
+export default { validateToken, register, login, registerView, loginView, logout };

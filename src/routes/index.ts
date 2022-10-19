@@ -1,9 +1,10 @@
 import express from 'express';
 import indexController from '../controllers/index';
-import loginController from '../controllers/login';
+import checkJWT from '../middleware/checkJWT';
 
 const router = express.Router();
 
-router.get('/', loginController.withUser, indexController.home);
+router.get('/', indexController.home);
+router.get('/dashboard', checkJWT, indexController.dashboard);
 
 export default router;
