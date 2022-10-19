@@ -4,17 +4,24 @@
         <li class="nav-item">
             <a class="nav-link" href="/">Home</a>
         </li>
+        <% if(user) { %>
+        <li class="nav-item">
+            <a class="nav-link" href="/dashboard">Dashboard</a>
+        </li>
+        <% } %>
     </ul>
     <ul class="navbar-nav float-right">
+        <% if(!user) { %>
         <li class="nav-item">
             <a class="nav-link" href="/register">Register</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="/login">Log in</a>
         </li>
-
+        <% } %> <% if(user) { %>
         <li class="nav-item">
-            <a class="nav-link" href="/logout">Log Out</a>
+            <a class="nav-link"><button id="log-out">Log Out</button></a>
         </li>
+        <% } %>
     </ul>
 </nav>
